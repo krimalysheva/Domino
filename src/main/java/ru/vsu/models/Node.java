@@ -30,7 +30,7 @@ public class Node {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof  Node){
+        if(obj instanceof  Node){ //если обж типа надо или наследник ноды
             return obj.hashCode() == this.hashCode();
         }
         return false;

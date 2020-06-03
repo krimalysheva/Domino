@@ -45,7 +45,4 @@ public class Dice {
         return nodes;
     }
 
-    /*public void reverse(){
-        Collections.reverse(nodes);
-    }*/
 }

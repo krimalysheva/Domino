@@ -13,13 +13,13 @@ public class Player {
     private String name;
     private List<Dice> dices = new ArrayList<>();
     private final BgColor color;
-    private final Random rnd = new Random();
+    private static final Random rnd = new Random();
 
     public Player(String name) {
         this.name = name;
 
-        Random rand = new Random();
-        color = BgColor.values()[rand.nextInt(16)];
+       // Random rand = new Random();
+        color = BgColor.values()[rnd.nextInt(16)];
     }
 
     public Dice getRandomDice() {
@@ -31,6 +31,7 @@ public class Player {
     public Dice getDiceForEnds(List<Dice> endDices) {
         try {
             /*https://vertex-academy.com/tutorials/ru/java-8-stream-find/*/
+            /*https://habr.com/ru/post/346782/*/
             List<Node> endNodes = endDices.stream().flatMap(d -> d.getEndNodes().stream()).collect(Collectors.toList());
             for (Node node :
                     endNodes) {
