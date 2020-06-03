@@ -5,14 +5,16 @@ import ru.vsu.models.Node;
 import ru.vsu.models.NodeValue;
 import ru.vsu.models.Player;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Game {
     private List<Dice> bank = new ArrayList<>();
     private List<Dice> board = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
-    private StringBuilder treeStringBuilder = new StringBuilder();
 
     private Game() {
     }
@@ -41,30 +43,62 @@ public class Game {
         return null;
     }
 
-    //todo fix get(0)
-    //todo fix get(1) tree
     public void start() {
         while (bank.size() > 0) {
             for (Player p : getPlayers()) {
                 if (board.size() == 0)
-                    board.add(p.getRandomDice());
+                    putDiceOnBoard(p.getRandomDice(), null);
                 else {
-                    List<Node> endNodes = getEnds().get(0).getEndNodes();
-                    Node endNode = endNodes.get(endNodes.size() - 1);
+                    List<Dice> ends = getEnds();
+                    Dice dice = null;
 
-                    while (bank.size() > 0 && !p.hasDice(endNode.getValue())) {
-                        p.addDice(getDiceFromBank());
+                    while (bank.size() > 0) {
+                        dice = p.getDiceForEnds(ends);
+                        if (dice != null)
+                            break;
+                        else
+                            p.addDice(getDiceFromBank());
                     }
 
-                    Dice d = p.getDice(endNode.getValue());
-                    if (d != null) {
-                        putDiceOnBoard(d, endNode);
+                    if (dice != null) {
+                        putDiceOnBoard(dice, ends);
+                    } else {
+                        System.out.println("End");
+
+                        return;
                     }
                 }
-                treeStringBuilder.append(getEnds().get(getEnds().size() - 1));
-                System.out.println(treeStringBuilder);
+
+                printTree(getEnds().get(0));
             }
         }
+    }
+
+    private void printTree(Dice endDice) {
+        StringBuilder treeStringBuilder = new StringBuilder();
+        List<Node> endNodes = endDice.getEndNodes();
+        if (endNodes == null || endNodes.size() == 0)
+            return;
+
+        Node startNode = endNodes.get(0);
+        Node startNodeInput = startNode.getInput();
+        Node nextNode = startNodeInput.getOutput();
+
+        while (nextNode != null) {
+            treeStringBuilder
+
+                    .append(startNode.getColor())
+                    .append("[")
+                    .append(startNode)
+                    .append('|')
+                    .append(startNodeInput)
+                    .append("]")
+                    .append(Color.ANSI_RESET);
+            startNode = nextNode;
+            startNodeInput = nextNode.getInput();
+            nextNode = startNodeInput.getOutput();
+        }
+        System.out.println(treeStringBuilder);
     }
 
     private void createDices() {
@@ -82,43 +116,19 @@ public class Game {
         Collections.shuffle(bank);
     }
 
-    private void putDiceOnBoard(Dice newDice, Node endNode) {
+    private void putDiceOnBoard(Dice newDice, List<Dice> ends) {
         board.add(newDice);
-        Node newNodeOutput = newDice.getEndNodes().stream().filter(n -> n.getValue() == endNode.getValue()).findFirst().get();
+        if (ends != null) {
+            List<Node> endNodes = ends.stream().flatMap(d -> d.getEndNodes().stream()).collect(Collectors.toList());
+            Node endNode = endNodes.stream().filter(n -> newDice.getEndNodes().contains(n)).findFirst().get();
 
-        endNode.setOutput(newNodeOutput);
-        newNodeOutput.setOutput(endNode);
+            Node newNodeOutput = newDice.getEndNodes().stream().filter(n -> n.getValue() == endNode.getValue()).findFirst().get();
+
+            endNode.setOutput(newNodeOutput);
+            newNodeOutput.setOutput(endNode);
+
+        }
     }
-
-    //todo fix get(1)
-    /*private void buildTree(StringBuilder sb, Dice dice, ArrayList<Node> visitedNodes) {
-        sb.append(dice);
-        Node nextDiceNode = dice.getNodes().get(1).getOutput();
-        visitedNodes.addAll(dice.getNodes());
-
-        if (nextDiceNode != null && !visitedNodes.contains(nextDiceNode)) {
-            Dice d = board.stream().filter(x -> x.getNodes().contains(nextDiceNode)).findFirst().get();
-            buildTree(sb, d, visitedNodes);
-        }
-        else return;
-    }*/
-
-    private void buildTree(StringBuilder sb, Dice newDice){
-        sb.append(newDice);
-    }
-
-    /*private void dicesGenerator(ArrayList<Node> sides, List<Dice> dices, int nodeValueIndex,  int sidesCount) {
-        if (sidesCount == 0) {
-            dices.add(new Dice(new ArrayList<>(sides)));
-            return;
-        }
-        sidesCount -=1;                                                             //next loop layer
-        for (int i = nodeValueIndex; i < NodeValue.values().length; i++) {
-            sides.add(new Node(NodeValue.values()[i]));                             //add new side  [i]!!!!!!!
-            dicesGenerator(sides, dices, i, sidesCount);                            //recursive call
-            sides.remove(sides.size() - 1);                                   //remove last side to generate next
-        }
-    }*/
 
     public static GameBuilder newGameBuilder() {
         return new Game().new GameBuilder();

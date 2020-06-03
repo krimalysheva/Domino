@@ -13,6 +13,8 @@ public class Dice {
 
     public Dice(List<Node> sides){
         this.nodes = sides;
+        nodes.get(0).setInput(nodes.get(1));
+        nodes.get(1).setInput(nodes.get(0));
     }
 
     @Override
@@ -21,7 +23,6 @@ public class Dice {
     }
 
     @Override
-    //todo
     //получаем костяшки 0-1 и 1-0 они одинаковые, а хеш-коды разные
     public int hashCode() {
         return Integer.parseInt(nodes.stream().map(n->Integer.toString(n.getValue().getValue())).sorted().reduce("", String::concat));

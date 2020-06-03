@@ -1,5 +1,8 @@
 package ru.vsu.models;
 
+
+import ru.vsu.BgColor;
+
 import java.util.Objects;
 
 public class Node {
@@ -7,6 +10,7 @@ public class Node {
 
     private Node input;
     private Node output;
+    private BgColor color;
 
     public Node(NodeValue value) {
         this.value = value;
@@ -50,5 +54,13 @@ public class Node {
 
     public void setOutput(Node output) {
         this.output = output;
+    }
+
+    public void setColor(BgColor color) {
+        this.color = color;
+    }
+
+    public BgColor getColor() {
+        return color;
     }
 }
