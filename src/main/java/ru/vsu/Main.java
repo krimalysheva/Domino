@@ -24,15 +24,6 @@ public class Main {
         }
     }
 
-    /*private static Properties readProperties() throws IOException {
-        Properties props = new Properties();
-        InputStream input = Main.class
-                .getClassLoader()
-                .getResourceAsStream(configFileName);
-        props.load(Objects.requireNonNull(input));
-        return props;
-    }*/
-
     private static List<Player> readPlayers() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Введите количество игроков");

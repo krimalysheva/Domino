@@ -25,8 +25,7 @@ public class Game {
 
     public List<Dice> getEnds() {
         return board.stream()
-                .filter(d -> d.getNodes().stream().anyMatch(n -> n.getOutput() == null))
-                .collect(Collectors.toList());
+                .filter(d -> d.getNodes().stream().anyMatch(n -> n.getOutput() == null)).collect(Collectors.toList());
     }
 
     public List<Player> getPlayers() {
@@ -86,7 +85,6 @@ public class Game {
 
         while (nextNode != null) {
             treeStringBuilder
-
                     .append(startNode.getColor())
                     .append("[")
                     .append(startNode)
