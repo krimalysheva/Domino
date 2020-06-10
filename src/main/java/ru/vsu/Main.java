@@ -15,7 +15,8 @@ public class Main {
             Game game = Game.newGameBuilder()
                     .withPlayers(readPlayers())
                     .withDices()
-                    .withDicesPerPlayer(6)
+                    .withDicesPerPlayer(readDominos())
+                    //.withDicesPerPlayers(readDominos())
                     .build();
             game.start();
 
@@ -35,5 +36,13 @@ public class Main {
             players.add(p);
         }
         return players;
+    }
+
+    private static int readDominos() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Введите количество домино");
+        int dominosCount = sc.nextInt();
+
+        return dominosCount;
     }
 }
